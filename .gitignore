@@ -1,0 +1,8 @@
+# .NET
+# .NET Core
+# .NET SDK
+.DS_Store
+.project
+.vscode
+bin/
+obj/
