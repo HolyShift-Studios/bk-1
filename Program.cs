@@ -1,21 +1,21 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using System;
-using System.Text;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-
+using Microsoft.EntityFrameworkCore; 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load configuration from appsettings.json
 builder.Configuration.AddJsonFile("appsettings.json");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+// Add database connection configuration
+var connectionString = builder.Configuration.GetConnectionString("MyAppDatabase");
+
+builder.Services.AddDbContext<HolyShiftDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("MyAppDatabase");
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 

@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+public class HolyShiftDbContext : DbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options){}
+    public HolyShiftDbContext(DbContextOptions<HolyShiftDbContext> options)
+        : base(options) { }
 
+    public DbSet<HolyShiftUser> Users { get; set; }
     public DbSet<ItemDbModel> Items { get; set; }
 }
