@@ -4,5 +4,6 @@
 .DS_Store
 .project
 .vscode
+appsettings.json
 bin/
 obj/
