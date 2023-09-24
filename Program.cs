@@ -8,10 +8,8 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore; 
 var builder = WebApplication.CreateBuilder(args);
 
-// Load configuration from appsettings.json
 builder.Configuration.AddJsonFile("appsettings.json");
 
-// Add database connection configuration
 var connectionString = builder.Configuration.GetConnectionString("MyAppDatabase");
 
 builder.Services.AddDbContext<HolyShiftDbContext>(options =>
