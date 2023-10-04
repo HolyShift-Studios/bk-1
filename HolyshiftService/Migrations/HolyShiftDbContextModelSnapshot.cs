@@ -16,20 +16,6 @@ namespace HolyShift.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.22")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
-
-            modelBuilder.Entity("ItemDbModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Items");
-                });
 #pragma warning restore 612, 618
         }
     }

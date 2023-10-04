@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HolyShift.Migrations
 {
     [DbContext(typeof(HolyShiftDbContext))]
-    [Migration("20231001174239_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20231004193358_HolyShiftMigration")]
+    partial class HolyShiftMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -18,20 +18,6 @@ namespace HolyShift.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.22")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
-
-            modelBuilder.Entity("ItemDbModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Items");
-                });
 #pragma warning restore 612, 618
         }
     }
