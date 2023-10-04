@@ -1,4 +1,4 @@
-public class HolyShiftDb
+public class HolyShiftDbConfig
 {
     public string Server { get; set; }
     public string Database { get; set; }
