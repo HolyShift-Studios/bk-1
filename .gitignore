@@ -1,0 +1,9 @@
+# .NET
+# .NET Core
+# .NET SDK
+.DS_Store
+.project
+.vscode
+appsettings.json
+bin/
+obj/
