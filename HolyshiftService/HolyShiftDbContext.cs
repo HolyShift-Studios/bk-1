@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.Extensions.Options;
 using System.Data.Common;
+
 public class HolyShiftDbContext : DbContext
 {
     private readonly HolyShiftDbConfig _config;
@@ -12,6 +12,7 @@ public class HolyShiftDbContext : DbContext
         _config = config.Value;
     }
 
+    public DbSet<HolyShiftUser> Users { get; set; } = null!;
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var connection = new DbConnectionStringBuilder
