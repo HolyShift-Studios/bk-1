@@ -39,7 +39,7 @@ public class LoginController : Controller
         if (user != null)
         {
             _logger.LogInformation("User found with email: " + email);
-            var salt = Convert.FromBase64String(user.PasswordSalt);
+            var salt = Convert.FromBase64String(user.Salt);
             using (var hasher = new Argon2id(Encoding.UTF8.GetBytes(password)))
             {
                 hasher.Salt = salt;

@@ -8,32 +8,30 @@ var builder = WebApplication.CreateBuilder(args);
 var configDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Config");
 
 builder.Configuration
-    .SetBasePath(configDirectory) 
+    .SetBasePath(configDirectory)
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 builder.Services.Configure<HolyShiftDbConfig>(builder.Configuration.GetSection("HolyShiftDbConfig"));
 
 builder.Services.AddDbContext<HolyShiftDbContext>();
 
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var key = jwtSettings["Key"];
-var issuer = jwtSettings["Issuer"];
-var audience = jwtSettings["Audience"];
+builder.Services.Configure<AuthConfig>(builder.Configuration.GetSection("Auth"));
 
 builder.Services.AddSingleton<JwtService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        var authConfig = builder.Configuration.GetSection("Auth").Get<AuthConfig>();
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = issuer,
-            ValidAudience = audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+            ValidIssuer = authConfig.Issuer, 
+            ValidAudience = authConfig.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Key)),
         };
         options.Events = new JwtBearerEvents
         {

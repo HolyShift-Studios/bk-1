@@ -51,12 +51,12 @@ public class RegistrationController : Controller
 
             var hashedPassword = Convert.ToBase64String(hasher.GetBytes(32));
 
-            var user = new HolyShiftUser
+            var user = new UserDbModel
             {
-                Id = Guid.NewGuid().ToString(), 
+                Id = Guid.NewGuid(), 
                 UserName = userName, 
                 Email = email,
-                PasswordSalt = Convert.ToBase64String(salt),
+                Salt = Convert.ToBase64String(salt),
                 PasswordHash = hashedPassword
             };
 

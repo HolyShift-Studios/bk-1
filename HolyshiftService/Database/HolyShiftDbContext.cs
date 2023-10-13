@@ -12,7 +12,15 @@ public class HolyShiftDbContext : DbContext
         _config = config.Value;
     }
 
-    public DbSet<HolyShiftUser> Users { get; set; } = null!;
+    public DbSet<UserDbModel> Users { get; set; } = default!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<UserDbModel>()
+            .HasKey(u => u.Id);
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var connection = new DbConnectionStringBuilder
