@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +12,7 @@ builder.Services.AddDbContext<HolyShiftDbContext>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<PasswordHashService>();
 builder.Services.AddScoped<IUserDao, UserDao>();
-
+builder.Services.AddScoped<AuthManager>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -21,7 +22,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
-builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
@@ -32,6 +32,20 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseHealthChecks("/health");
 
-app.MapControllers();
+app.MapPost("api/SignIn", async Task<ResponseDto>(HttpContext context, AuthManager authManager) =>
+{
+    var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
+    var requestDto = JsonConvert.DeserializeObject<RequestDto>(requestBody);
+    ResponseDto response = await authManager.SignIn(requestDto);
+    return response;
+});
+
+app.MapPost("api/SignUp", async Task<RegisterResponseDto>(HttpContext context, AuthManager authManager) =>
+{
+    var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
+    var requestDto = JsonConvert.DeserializeObject<RegistereRequestDto>(requestBody);
+    RegisterResponseDto response = await authManager.SignUp(requestDto);
+    return response;
+});
 
 app.Run();
