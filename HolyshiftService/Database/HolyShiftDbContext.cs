@@ -17,8 +17,14 @@ public class HolyShiftDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<UserDbModel>()
-            .HasKey(u => u.Id);
+            .HasIndex(u => u.Email)
+            .IsUnique();
+        modelBuilder.Entity<UserDbModel>()
+            .HasIndex(u => u.UserName)
+            .IsUnique();
+        
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

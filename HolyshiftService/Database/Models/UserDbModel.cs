@@ -6,22 +6,30 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class UserDbModel
 {
     [Key]
-    [Column(TypeName = "char(36)")]
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    [MaxLength(255)]
-    [Column(TypeName = "varchar(255)")]
-    public string UserName { get; set; } = string.Empty;
+    [MaxLength(100)]
+    public string UserName { get; set; } = default!;
 
-    [MaxLength(255)]
-    [Column(TypeName = "varchar(255)")]
-    public string Email { get; set; } = string.Empty;
+    [MaxLength(100)]
+    public string Email { get; set; } = default!;
 
-    [MaxLength(64)]
-    [Column(TypeName = "varchar(64)")]
-    public string Salt { get; set; } = string.Empty;
+    [MaxLength(25)] 
+    public string Salt { get; set; } = default!;
 
-    [MaxLength(64)]
-    [Column(TypeName = "varchar(64)")]
-    public string PasswordHash { get; set; } = string.Empty;
+    [MaxLength(45)]
+    public string PasswordHash { get; set; } = default!;
+
+    [MaxLength(128)]
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiration { get; set; }
+    public UserRole Role { get; set; }
 }
+
+public enum UserRole
+{
+    Customer,
+    Admin, 
+    SuperAdmin 
+}
+

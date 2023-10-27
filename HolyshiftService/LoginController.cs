@@ -4,71 +4,71 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Text;
 
+
+public class RequestDto
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+}
+
+public class ResponseDto
+{
+    public string AccessToken { get; set; }
+    public string RefreshToken { get; set; }
+    public string Message { get; set; }
+}
+
 public class LoginController : Controller
 {
-    private readonly HolyShiftDbContext _context;
-    private readonly JwtService _jwtService;
-    private readonly ILogger<LoginController> _logger;
+    private readonly HolyShiftDbContext _db;
+    private readonly AuthService _jwtService;
+    private readonly PasswordHashService _passwordHashService;
+    private readonly IUserDao _userDao;
 
-    public LoginController(HolyShiftDbContext context, JwtService jwtService, ILogger<LoginController> logger)
+    public LoginController(HolyShiftDbContext context, AuthService jwtService, PasswordHashService passwordHashService, IUserDao userDao)
     {
-        _context = context;
+        _db = context;
         _jwtService = jwtService;
-        _logger = logger;
+        _passwordHashService = passwordHashService;
+        _userDao = userDao;
     }
 
-    [HttpPost("api/login")]
-    public async Task<IActionResult> Login()
+    [HttpPost("api/SignIn")]
+    public async Task<ResponseDto> SignIn()
     {
         var requestBody = await new StreamReader(Request.Body).ReadToEndAsync();
-        var requestData = JsonConvert.DeserializeObject<Dictionary<string, string>>(requestBody);
+        var request = JsonConvert.DeserializeObject<RequestDto>(requestBody);
+        var responseDto = new ResponseDto();
 
-        if (requestData == null)
+        if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
         {
-            return BadRequest(new { Message = "Invalid request body" });
+            responseDto.Message = "Invalid request body";
+            return responseDto;
         }
-
-        if (!requestData.TryGetValue("email", out var email) || !requestData.TryGetValue("password", out var password))
-        {
-            return BadRequest(new { Message = "Invalid request body" });
-        }
-
-        _logger.LogInformation("Login attempt for email: " + email);
-
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        var user = await _userDao.GetUserByEmailOrUserName(request.Email, null);
         if (user != null)
         {
-            _logger.LogInformation("User found with email: " + email);
             var salt = Convert.FromBase64String(user.Salt);
-            using (var hasher = new Argon2id(Encoding.UTF8.GetBytes(password)))
+            var (hashedPassword, _) = _passwordHashService.HashPassword(request.Password, user.Salt);
+
+            if (user.PasswordHash == hashedPassword)
             {
-                hasher.Salt = salt;
-                hasher.DegreeOfParallelism = 8;
-                hasher.MemorySize = 65536;
-                hasher.Iterations = 4;
-
-                var hashedPassword = Convert.ToBase64String(hasher.GetBytes(32));
-
-                if (user.PasswordHash == hashedPassword)
-                {
-                    _logger.LogInformation("Login successful for email: " + email);
-
-                    var accessToken = _jwtService.GenerateJwtToken(user);
-                    var refreshToken = _jwtService.GenerateRefreshToken();
-
-                    return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
-                }
-                else
-                {
-                    _logger.LogInformation("Password does not match for email: " + email);
-                    return BadRequest(new { Message = "Invalid password" });
-                }
+                var accessToken = _jwtService.GenerateJwtToken(user);
+                var refreshToken = _jwtService.GenerateRefreshToken(user);
+                responseDto.AccessToken = accessToken;
+                responseDto.RefreshToken = refreshToken;
+                responseDto.Message = "Success";
+            }
+            else
+            {
+                responseDto.Message = "Invalid password";
             }
         }
         else
         {
-            _logger.LogInformation("User not found with email: " + email);
-            return BadRequest(new { Message = "User not found" });
+            responseDto.Message = "User not found";
         }
+
+        return responseDto;
     }
 }
