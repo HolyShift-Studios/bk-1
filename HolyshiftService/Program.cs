@@ -1,6 +1,8 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
+﻿using HolyShift;
+using HolyShift.Auth;
+using HolyShift.Config;
+using HolyShift.Database;
+using HolyShift.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,17 +10,13 @@ builder.Services.Configure<HolyShiftDbConfig>(builder.Configuration.GetSection("
 builder.Services.Configure<AuthConfig>(builder.Configuration.GetSection("Auth"));
 
 builder.Services.AddDbContext<HolyShiftDbContext>();
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<PasswordHashService>();
-builder.Services.AddScoped<IUserDao, UserDao>();
-builder.Services.AddScoped<AuthManager>();
+builder.Services.AddTransient<JwtService>();
+builder.Services.AddTransient<PasswordHashService>();
+builder.Services.AddTransient<IUserDao, UserDao>();
+builder.Services.AddTransient<AuthManager>();
+builder.Services.AddTransient<IAuthHandler, AuthHandler>();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        var authService = builder.Services.BuildServiceProvider().GetService<AuthService>();
-        options.TokenValidationParameters = authService.GetTokenValidationParameters();
-    });
+builder.AddAuth();
 
 builder.Services.AddAuthorization();
 builder.Services.AddHealthChecks();
@@ -31,7 +29,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseHealthChecks("/health");
+
 app.MapPost("api/SignIn", AuthenticationRoutes.SignIn);
-app.MapPost("api/SignUp", AuthenticationRoutes.SignUp);
+app.MapAuthEndpoints();
 
 app.Run();

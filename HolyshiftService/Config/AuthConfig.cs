@@ -1,3 +1,5 @@
+namespace HolyShift.Config;
+
 public class AuthConfig
 {
     public string KeyBase64 { get; set; }

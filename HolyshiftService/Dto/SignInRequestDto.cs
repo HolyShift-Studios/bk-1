@@ -1,13 +1,12 @@
 using System.Text.Json.Serialization;
 
-namespace HolyShiftService.Dto
-{
-    public struct SignInRequestDto
-    {
-        [JsonPropertyName("Email")]
-        public string Email { get; init; }
+namespace HolyShift.Dto;
 
-        [JsonPropertyName("Password")]
-        public string Password { get; init; }
-    }
+public class SignInRequestDto
+{
+    [JsonPropertyName("Email")]
+    public string Email { get; init; }
+
+    [JsonPropertyName("Password")]
+    public string Password { get; init; }
 }

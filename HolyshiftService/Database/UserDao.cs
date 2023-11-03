@@ -1,6 +1,8 @@
+using HolyShift.Database.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
+
+namespace HolyShift.Database;
+
 public class UserDao : IUserDao
 {
     private readonly HolyShiftDbContext _db;
@@ -8,7 +10,7 @@ public class UserDao : IUserDao
     {
         _db = context;
     }
-    public async Task<UserDbModel> GetUserByEmailOrUserName(string email, string userName)
+    public async Task<UserDbModel?> GetUserByEmailOrUserName(string email, string userName)
     {
         return await _db.Users.FirstOrDefaultAsync(u => u.Email == email || u.UserName == userName);
     }

@@ -1,11 +1,12 @@
 using System.Text.Json.Serialization;
 
-namespace HolyShiftService.Dto
+namespace HolyShift.Dto;
+
+public class SignInResponseDto : ResponseDto
 {
-    public struct SignInResponseDto
-    {
-        public string AccessToken { get; init; }
-        public string RefreshToken { get; init; }
-        public string Message { get; init; }
-    }
+    [JsonPropertyName("access_token")]
+    public string AccessToken { get; init; }
+
+    [JsonPropertyName("refresh_token")]
+    public string RefreshToken { get; init; }
 }

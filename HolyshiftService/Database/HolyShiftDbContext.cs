@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Data.Common;
+using HolyShift.Database.Models;
 
 public class HolyShiftDbContext : DbContext
 {
