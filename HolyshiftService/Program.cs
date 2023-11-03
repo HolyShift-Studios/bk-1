@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,22 +29,9 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseHealthChecks("/health");
-
-app.MapPost("api/SignIn", async Task<ResponseDto>(HttpContext context, AuthManager authManager) =>
-{
-    var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
-    var requestDto = JsonConvert.DeserializeObject<RequestDto>(requestBody);
-    ResponseDto response = await authManager.SignIn(requestDto);
-    return response;
-});
-
-app.MapPost("api/SignUp", async Task<RegisterResponseDto>(HttpContext context, AuthManager authManager) =>
-{
-    var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
-    var requestDto = JsonConvert.DeserializeObject<RegistereRequestDto>(requestBody);
-    RegisterResponseDto response = await authManager.SignUp(requestDto);
-    return response;
-});
+app.MapPost("api/SignIn", AuthenticationRoutes.SignIn);
+app.MapPost("api/SignUp", AuthenticationRoutes.SignUp);
 
 app.Run();

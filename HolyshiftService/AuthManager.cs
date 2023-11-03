@@ -1,40 +1,7 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-
-
-public class RequestDto
-{
-    public string Email { get; set; }
-    public string Password { get; set; }
-}
-
-public class ResponseDto
-{
-    public string AccessToken { get; set; }
-    public string RefreshToken { get; set; }
-    public string Message { get; set; }
-}
-public class RegistereRequestDto
-{
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public string UserName { get; set; } 
-}
-
-public class RegisterResponseDto
-{
-    public string Message { get; set; }
-}
+using HolyShiftService.Dto;
 
 public class AuthManager
 {
@@ -51,50 +18,58 @@ public class AuthManager
         _userDao = userDao;
     }
 
-    public async Task<ResponseDto> SignIn(RequestDto requestDto)
+    public async Task<SignInResponseDto> SignIn(SignInRequestDto requestDto)
     {
-        var responseDto = new ResponseDto();
-
+        string accessToken = null;
+        string refreshToken = null;
+        string message = null;
         if (string.IsNullOrEmpty(requestDto.Email) || string.IsNullOrEmpty(requestDto.Password))
         {
-            responseDto.Message = "Invalid request body";
-            return responseDto;
+            return new SignInResponseDto{
+                    AccessToken = accessToken,
+                    RefreshToken = refreshToken,
+                    Message = "Invalid request body"
+                };
         }
         var user = await _userDao.GetUserByEmailOrUserName(requestDto.Email, null);
-        if (user != null)
+        if (user == null)
         {
-            var salt = Convert.FromBase64String(user.Salt);
-            var (hashedPassword, _) = _passwordHashService.HashPassword(requestDto.Password, user.Salt);
+            return new SignInResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                Message = "User not found"
+            };
+        }
 
-            if (user.PasswordHash == hashedPassword)
+        var hashedPassword = _passwordHashService.HashPassword(requestDto.Password, user.Salt);
+        if (user.PasswordHash == hashedPassword)
+        {
+            accessToken = _jwtService.GenerateJwtToken(user);
+            refreshToken = _jwtService.GenerateRefreshToken(user);
+            return new SignInResponseDto
             {
-                var accessToken = _jwtService.GenerateJwtToken(user);
-                var refreshToken = _jwtService.GenerateRefreshToken(user);
-                responseDto.AccessToken = accessToken;
-                responseDto.RefreshToken = refreshToken;
-                responseDto.Message = "Success";
-            }
-            else
-            {
-                responseDto.Message = "Invalid password";
-            }
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                Message = "Success"
+            };
         }
         else
         {
-            responseDto.Message = "User not found";
+            return new SignInResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                Message = "Invalid password"
+            };
         }
-
-        return responseDto;
     }
 
-    public async Task<RegisterResponseDto> SignUp(RegistereRequestDto requestDto)
+    public async Task<SingUpResponseDto> SignUp(SingUpRequestDto requestDto)
     {
-        var responseDto = new RegisterResponseDto();
-
         if (string.IsNullOrEmpty(requestDto.Email) || string.IsNullOrEmpty(requestDto.Password) || string.IsNullOrEmpty(requestDto.UserName))
         {
-            responseDto.Message = "Invalid request body";
-            return responseDto;
+            return new SingUpResponseDto{Message = "Invalid request body"};
         }
 
         var existingUser = await _userDao.GetUserByEmailOrUserName(requestDto.Email, requestDto.UserName);
@@ -103,17 +78,16 @@ public class AuthManager
         {
             if (existingUser.Email == requestDto.Email)
             {
-                responseDto.Message = "Email is already registered.";
-                return responseDto;
+                return new SingUpResponseDto{Message = "Email is already registered."};
             }
             if (existingUser.UserName == requestDto.UserName)
             {
-                responseDto.Message = "Username is already registered.";
-                return responseDto;
+                return new SingUpResponseDto{Message = "Username is already registered."};
             }
         }
 
-        var (hashedPassword, salt) = _passwordHashService.HashPassword(requestDto.Password);
+        string salt = _passwordHashService.GenerateRandomSalt(16);
+        string hashedPassword = _passwordHashService.HashPassword(requestDto.Password, salt);
 
         var user = new UserDbModel
         {
@@ -126,7 +100,6 @@ public class AuthManager
         };
 
         await _userDao.AddUser(user);
-        responseDto.Message = "Registration successful";
-        return responseDto;
+        return new SingUpResponseDto{Message = "Registration successful"};
     }
 }
