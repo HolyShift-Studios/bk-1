@@ -23,6 +23,9 @@ builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
+if(app.Environment.IsDevelopment())
+    app.UseExceptionHandler();
+
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();

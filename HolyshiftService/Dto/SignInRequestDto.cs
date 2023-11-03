@@ -4,9 +4,9 @@ namespace HolyShift.Dto;
 
 public class SignInRequestDto
 {
-    [JsonPropertyName("Email")]
+    [JsonPropertyName("email")]
     public string Email { get; init; }
 
-    [JsonPropertyName("Password")]
+    [JsonPropertyName("password")]
     public string Password { get; init; }
 }

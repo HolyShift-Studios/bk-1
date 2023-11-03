@@ -4,12 +4,12 @@ namespace HolyShift.Dto;
 
 public class SingUpRequestDto
 {
-    [JsonPropertyName("Password")]
+    [JsonPropertyName("email")]
     public string Email { get; init; }
 
-    [JsonPropertyName("Password")]
+    [JsonPropertyName("password")]
     public string Password { get; init; }
 
-    [JsonPropertyName("Username")]
+    [JsonPropertyName("username")]
     public string UserName { get; init; }
 }
