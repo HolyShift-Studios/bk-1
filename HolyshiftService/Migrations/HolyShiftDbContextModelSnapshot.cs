@@ -18,7 +18,7 @@ namespace HolyShift.Migrations
                 .HasAnnotation("ProductVersion", "6.0.22")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("UserDbModel", b =>
+            modelBuilder.Entity("HolyShift.Database.Models.UserDbModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -31,8 +31,8 @@ namespace HolyShift.Migrations
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(45)
-                        .HasColumnType("varchar(45)");
+                        .HasMaxLength(88)
+                        .HasColumnType("varchar(88)");
 
                     b.Property<string>("RefreshToken")
                         .HasMaxLength(128)

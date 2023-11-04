@@ -15,19 +15,6 @@ public class HolyShiftDbContext : DbContext
 
     public DbSet<UserDbModel> Users { get; set; } = default!;
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<UserDbModel>()
-            .HasIndex(u => u.Email)
-            .IsUnique();
-        modelBuilder.Entity<UserDbModel>()
-            .HasIndex(u => u.UserName)
-            .IsUnique();
-        
-    }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var connection = new DbConnectionStringBuilder

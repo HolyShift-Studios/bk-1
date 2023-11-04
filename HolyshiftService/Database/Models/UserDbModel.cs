@@ -6,6 +6,7 @@ namespace HolyShift.Database.Models;
 
 [Table("Users")]
 [Index(nameof(Email), IsUnique = true)]
+[Index(nameof(UserName), IsUnique = true)]
 public class UserDbModel
 {
     [Key]
@@ -20,7 +21,7 @@ public class UserDbModel
     [MaxLength(25)]
     public string Salt { get; set; } = default!;
 
-    [MaxLength(45)]
+    [MaxLength(88)]
     public string PasswordHash { get; set; } = default!;
 
     [MaxLength(128)]
