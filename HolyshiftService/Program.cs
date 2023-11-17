@@ -12,10 +12,10 @@ builder.Services.Configure<HolyShiftDbConfig>(builder.Configuration.GetSection("
 builder.Services.Configure<AuthConfig>(builder.Configuration.GetSection("Auth"));
 
 builder.Services.AddDbContext<HolyShiftDbContext>();
-builder.Services.AddTransient<JwtService>();
-builder.Services.AddTransient<PasswordHashService>();
+builder.Services.AddTransient<IJwtService, JwtService>();
+builder.Services.AddTransient<IPasswordHashService, PasswordHashService>();
 builder.Services.AddTransient<IUserDao, UserDao>();
-builder.Services.AddTransient<IAuthHandler, AuthHandler>();
+builder.Services.AddTransient<IAuthService, AuthService>();
 
 builder.AddAuth();
 

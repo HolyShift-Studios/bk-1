@@ -13,9 +13,9 @@ public class ResponseDto
     [JsonPropertyName("message")]
     public string? Message { get; set; }
 
-    public static ResponseDto Error(string errorCode, string message)
+    public static T Error<T>(string errorCode, string message) where T : ResponseDto, new()
     {
-        return new ResponseDto
+        return new T
         {
             Success = false,
             ErrorCode = errorCode,

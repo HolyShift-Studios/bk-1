@@ -2,22 +2,22 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using HolyShift.Config;
+using HolyShift.Database;
 using HolyShift.Database.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace HolyShift.Auth;
 
-public class JwtService
+public class JwtService : IJwtService
 {
     private readonly IOptions<AuthConfig> _authConfig;
-    private readonly HolyShiftDbContext _db;
+    private readonly IUserDao _userDao;
 
-    public JwtService(IOptions<AuthConfig> authConfig, HolyShiftDbContext db)
+    public JwtService(IOptions<AuthConfig> authConfig, IUserDao userDao)
     {
         _authConfig = authConfig;
-        _db = db;
+        _userDao = userDao;
     }
 
     public string GenerateJwtToken(UserDbModel user)
@@ -53,18 +53,14 @@ public class JwtService
         }
 
         string refreshToken = BitConverter.ToString(randomBytes).Replace("-", "").ToLower();
-        user.RefreshToken = refreshToken;
+        _userDao.UpdateRefreshToken(user, refreshToken, _authConfig.Value.RefreshTokenExpirationDays);
 
-        user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiration = DateTime.UtcNow.AddDays(_authConfig.Value.RefreshTokenExpirationDays);
-        _db.Entry(user).State = EntityState.Modified;
-        _db.SaveChanges();
         return refreshToken;
     }
 
     public bool ValidateRefreshToken(string refreshToken)
     {
-        var user = _db.Users.SingleOrDefault(u => u.RefreshToken == refreshToken);
+        var user = _userDao.GetUserByRefreshToken(refreshToken);
 
         if (user == null || user.RefreshTokenExpiration < DateTime.UtcNow)
         {

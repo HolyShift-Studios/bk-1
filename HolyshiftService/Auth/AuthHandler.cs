@@ -4,13 +4,13 @@ using HolyShift.Dto;
 
 namespace HolyShift.Auth;
 
-public class AuthHandler : IAuthHandler
+public class AuthService : IAuthService
 {
     private readonly IUserDao _userDao;
-    private readonly PasswordHashService _passwordHashService;
-    private readonly JwtService _jwtService;
+    private readonly IPasswordHashService _passwordHashService;
+    private readonly IJwtService _jwtService;
 
-    public AuthHandler(IUserDao userDao, PasswordHashService passwordHashService, JwtService jwtService)
+    public AuthService(IUserDao userDao, IPasswordHashService passwordHashService, IJwtService jwtService)
     {
         _userDao = userDao;
         _passwordHashService = passwordHashService;
@@ -22,7 +22,7 @@ public class AuthHandler : IAuthHandler
         var existingUser = await _userDao.GetUserByEmailOrUserName(signupRequest.Email, signupRequest.UserName);
 
         if (existingUser != null)
-            return ResponseDto.Error("1001", "User already exist with the same email or username");
+            return ResponseDto.Error<ResponseDto>("1001", "User already exists with the same email or username");
 
         string salt = _passwordHashService.GenerateRandomSalt(16);
         string hashedPassword = await _passwordHashService.HashPassword(signupRequest.Password, salt);
@@ -38,7 +38,7 @@ public class AuthHandler : IAuthHandler
         };
 
         await _userDao.AddUser(user);
-        return new ResponseDto{Message = "success" };
+        return new ResponseDto();
     }
 
     public async Task<SignInResponseDto> SignIn(SignInRequestDto requestDto)
@@ -46,14 +46,15 @@ public class AuthHandler : IAuthHandler
         var user = await _userDao.GetUserByEmailOrUserName(requestDto.Email, null);
         if (user == null)
         {
-            return new SignInResponseDto { 
-                ErrorCode = "1001",
-                Message = "User not found"
-            };
+            return ResponseDto.Error<SignInResponseDto>("1001", "User not found");
         }
             
         var hashedPassword = await _passwordHashService.HashPassword(requestDto.Password, user.Salt);
-        if (user.PasswordHash == hashedPassword)
+        if(user.PasswordHash != hashedPassword)
+        {
+            return ResponseDto.Error<SignInResponseDto>("1002", "Invalid password");
+        }
+        else
         {
             var accessToken = _jwtService.GenerateJwtToken(user);
             var refreshToken = _jwtService.GenerateRefreshToken(user);
@@ -61,22 +62,7 @@ public class AuthHandler : IAuthHandler
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
-                Message = "Success"
-            };
-        }
-        else
-        {
-            return new SignInResponseDto
-            {
-                ErrorCode = "1002",
-                Message = "Invalid password"
             };
         }
     }
-}
-
-public interface IAuthHandler
-{
-    Task<ResponseDto> SignUp(SingUpRequestDto signupRequest);
-    Task<SignInResponseDto> SignIn(SignInRequestDto signinRequest);
 }

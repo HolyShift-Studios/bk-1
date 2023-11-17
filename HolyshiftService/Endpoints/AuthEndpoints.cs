@@ -14,26 +14,22 @@ public static class AuthEndpoints
         app.MapPost("/api/auth/signin", SignIn);
     }
 
-    private static async Task<ResponseDto> SignUp(SingUpRequestDto requestDto, IAuthHandler authHandler)
+    private static async Task<ResponseDto> SignUp(SingUpRequestDto requestDto, IAuthService AuthService)
     {
         if (string.IsNullOrEmpty(requestDto.Email) || string.IsNullOrEmpty(requestDto.Password) || string.IsNullOrEmpty(requestDto.UserName))
         {
-            return ResponseDto.Error("1001", "Invalid request body");
+            return ResponseDto.Error<ResponseDto>("1001", "Invalid request body");
         }
-        return await authHandler.SignUp(requestDto);
+        return await AuthService.SignUp(requestDto);
     }
-    private static async Task<SignInResponseDto> SignIn(SignInRequestDto requestDto, IAuthHandler authHandler)
+    private static async Task<SignInResponseDto> SignIn(SignInRequestDto requestDto, IAuthService AuthService)
     {
         if (string.IsNullOrEmpty(requestDto.Email) || string.IsNullOrEmpty(requestDto.Password))
         {
-            return new SignInResponseDto
-            {
-                ErrorCode = "1001",
-                Message = "Invalid request body"
-            };
+            return ResponseDto.Error<SignInResponseDto>("1001", "Invalid request body");
         }
 
-        return await authHandler.SignIn(requestDto);
+        return await AuthService.SignIn(requestDto);
     }
 
 }

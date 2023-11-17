@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HolyShift.Migrations
 {
     [DbContext(typeof(HolyShiftDbContext))]
-    [Migration("20231103211511_PasswordLength")]
-    partial class PasswordLength
+    [Migration("20231116235830_UserDbModel")]
+    partial class UserDbModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
