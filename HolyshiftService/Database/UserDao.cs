@@ -23,17 +23,5 @@ namespace HolyShift.Database
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
         }
-
-        public UserDbModel? GetUserByRefreshToken(string refreshToken)
-        {
-            return _db.Users.SingleOrDefault(u => u.RefreshToken == refreshToken);
-        }
-        public void UpdateRefreshToken(UserDbModel user, string refreshToken, int refreshTokenExpirationDays)
-        {
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiration = DateTime.UtcNow.AddDays(refreshTokenExpirationDays);
-            _db.Entry(user).State = EntityState.Modified;
-            _db.SaveChanges();
-        }
     }
 }

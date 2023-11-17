@@ -57,11 +57,9 @@ public class AuthService : IAuthService
         else
         {
             var accessToken = _jwtService.GenerateJwtToken(user);
-            var refreshToken = _jwtService.GenerateRefreshToken(user);
             return new SignInResponseDto
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken,
             };
         }
     }

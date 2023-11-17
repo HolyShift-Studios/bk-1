@@ -41,32 +41,4 @@ public class JwtService : IJwtService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
-    public string GenerateRefreshToken(UserDbModel user)
-    {
-        var tokenLength = 16;
-        var randomBytes = new byte[tokenLength];
-
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(randomBytes);
-        }
-
-        string refreshToken = BitConverter.ToString(randomBytes).Replace("-", "").ToLower();
-        _userDao.UpdateRefreshToken(user, refreshToken, _authConfig.Value.RefreshTokenExpirationDays);
-
-        return refreshToken;
-    }
-
-    public bool ValidateRefreshToken(string refreshToken)
-    {
-        var user = _userDao.GetUserByRefreshToken(refreshToken);
-
-        if (user == null || user.RefreshTokenExpiration < DateTime.UtcNow)
-        {
-            return false;
-        }
-
-        return true;
-    }
 }
