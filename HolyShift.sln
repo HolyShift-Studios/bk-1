@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HolyShift", "HolyShiftService\HolyShift.csproj", "{CD2114D2-9977-40AF-A32C-7CF3576AF2CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HolyShift", "HolyShiftService\HolyShift.csproj", "{D2172C1C-E8C3-495F-8262-D7BA92E6E93F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CD2114D2-9977-40AF-A32C-7CF3576AF2CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD2114D2-9977-40AF-A32C-7CF3576AF2CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CD2114D2-9977-40AF-A32C-7CF3576AF2CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CD2114D2-9977-40AF-A32C-7CF3576AF2CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2172C1C-E8C3-495F-8262-D7BA92E6E93F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2172C1C-E8C3-495F-8262-D7BA92E6E93F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2172C1C-E8C3-495F-8262-D7BA92E6E93F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2172C1C-E8C3-495F-8262-D7BA92E6E93F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {546A5F11-F1B0-44AC-9D74-2691CEB523C3}
+		SolutionGuid = {E9CA24E6-7BE5-41AA-B329-CDC70023F06C}
 	EndGlobalSection
 EndGlobal
